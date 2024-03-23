@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.security.PublicKey;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin
@@ -27,6 +28,15 @@ public class QuizController {
         }
     }
 
+    @PutMapping({"/{id}"})
+    public boolean update(@RequestBody Map<String, List<Integer>> requestBody, @PathVariable int id) {
+        List<Integer> questionIds = requestBody.get("questionIds");
+        try {
+            return fileRepository.update(questionIds, id);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     @GetMapping
     public List<Quiz> findAll() {
         try {

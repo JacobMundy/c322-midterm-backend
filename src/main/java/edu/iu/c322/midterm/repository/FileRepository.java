@@ -3,6 +3,7 @@ package edu.iu.c322.midterm.repository;
 import edu.iu.c322.midterm.model.Question;
 import edu.iu.c322.midterm.model.Quiz;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -15,6 +16,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class FileRepository {
@@ -100,9 +102,22 @@ public class FileRepository {
         return result;
     }
 
-
-
-
+    public boolean update(List<Integer> questionIds, int id) throws IOException {
+          List<Quiz> quizzes = findAllQuizzes();
+            for (Quiz quiz : quizzes) {
+                if (quiz.getId() == id) {
+                    quiz.setQuestionIds(questionIds);
+                    Path path = Paths.get(QUIZ_DATABASE_NAME);
+                    List<String> lines = new ArrayList<>();
+                    for (Quiz q : quizzes) {
+                        lines.add(q.toLine(q.getId()));
+                    }
+                    Files.write(path, lines);
+                    return true;
+                }
+            }
+            return false;
+    }
 
     public List<Question> find(String answer) throws IOException {
         List<Question> animals = findAllQuestions();

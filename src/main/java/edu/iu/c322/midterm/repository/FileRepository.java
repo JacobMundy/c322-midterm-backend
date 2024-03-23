@@ -53,9 +53,36 @@ public class FileRepository {
         appendToFile(path, data + NEW_LINE);
         return id;
     }
+    public List<Quiz> findAllQuizzes() throws IOException {
+        List<Quiz> result = new ArrayList<>();
+        Path path = Paths.get(QUIZ_DATABASE_NAME);
+        if (Files.exists(path)) {
+            List<String> data = Files.readAllLines(path);
+            for (String line : data) {
+                if(!line.trim().isEmpty()) {
+                    Quiz q = Quiz.fromLine(line);
+                    result.add(q);
+                }
+            }
+        }
+        return result;
+    }
 
-
-
+    public boolean add(Quiz quiz) throws IOException {
+        Path path = Paths.get(QUIZ_DATABASE_NAME);
+        List<Quiz> quizzes = findAllQuizzes();
+        int id = 0;
+        for(Quiz q : quizzes) {
+            if(q.getId() > id) {
+                id = q.getId();
+            }
+        }
+        id = id + 1;
+        quiz.setId(id);
+        String data = quiz.toLine(id);
+        appendToFile(path, data + NEW_LINE);
+        return true;
+    }
 
 
     public List<Question> findAllQuestions() throws IOException {

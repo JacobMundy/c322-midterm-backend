@@ -1,5 +1,7 @@
 package edu.iu.c322.midterm.model;
 
+import edu.iu.c322.midterm.repository.FileRepository;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,18 +13,23 @@ public class Quiz {
 
     private List<Question> questions;
 
+    private FileRepository fileRepository;
+
     public Quiz(Integer id, String quizTitle, List<Integer> questionIds) {
+        this.fileRepository = new FileRepository();
         this.id = id;
         this.title = quizTitle;
         this.questionIds = questionIds;
+        try {
+            this.questions = fileRepository.find(questionIds);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public String toLine(int quizId) {
-        String questionIds = String.join(",", getQuestionIds().stream().map(String::valueOf).toList());
-        String line = String.format("%1s,%2s, %3s",
-                quizId,
-                getTitle(),
-                              questionIds);
+        String questionIdsStr = String.join(",", questionIds.stream().map(String::valueOf).toList());
+        String line = String.format("%1s,%2s, %3s", quizId, title, questionIdsStr);
         return line;
     }
 
